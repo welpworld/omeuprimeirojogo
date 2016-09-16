@@ -1,8 +1,10 @@
-var game = new Phaser.Game(/*width = */ '100',/* height= */ '100', Phaser.AUTO, /* Patent = */ '');
+var jogo = new Motor();
 
-game.state.add('Boot', Welpworld.Boot);
-game.state.add('Preloader', Welpworld.Preload);
-game.state.add('MainMenu', Welpworld.MainMenu);
-game.state.add('Game', Welpworld.Game);
+jogo.tela('100','100','');
 
-game.state.start('Boot');
+jogo.adicionarEstado('Boot', Welpworld.Boot);
+jogo.adicionarEstado('Preloader', Welpworld.Preload);
+jogo.adicionarEstado('MainMenu', Welpworld.MainMenu);
+jogo.adicionarEstado('Game', Welpworld.Game);
+
+jogo.activarEstado('Boot');
