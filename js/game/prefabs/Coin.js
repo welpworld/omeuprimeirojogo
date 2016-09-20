@@ -1,5 +1,5 @@
 var Coin = function(game, x, y, key, frame) {
-  key = 'coins';
+  key = 'coin';
   Phaser.Sprite.call(this, game, x, y, key, frame);
 
   this.scale.setTo(0.5);

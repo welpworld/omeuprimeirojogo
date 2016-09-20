@@ -17,7 +17,7 @@ Welpworld.Boot.prototype = {
     jogo.numeroToques(1);
 
     if (jogo.paraDispositivoMovel()) {
-      jogo.definirDimensoes(568,600,2048,1536,true);
+      jogo.definirDimensoesMovel(568,600,2048,1536,true);
     }
 
     jogo.activarEstado('Preloader');

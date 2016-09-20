@@ -8,13 +8,13 @@ Welpworld.Game = function() {
   this.coinRate = 1000;
   this.coinTimer = 0;
 
-  this.enemyRate = 2000;
+  this.enemyRate = 1000;
   this.enemyTimer = 0;
 
   this.score = 0;
   this.previousCoinType = null;
 
-  this.coinSpawnX = null;
+  this.coinSpawnX = jogo.larguraTela();
   this.coinSpacingX = 10;
   this.coinSpacingY = 10;
 
@@ -23,42 +23,43 @@ Welpworld.Game = function() {
 
 Welpworld.Game.prototype = {
   create: function() {
-    this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
+    this.background = jogo.utilizarSprite(0, 0, this.game.width, this.game.height, 'background');
 
-    this.ground = this.game.add.tileSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
+    this.ground = jogo.utilizarSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
     
-    this.player = this.add.sprite(200, this.game.height/2, 'player');
-    this.player.anchor.setTo(0.5);
+    this.player = jogo.utilizarImagem(200, this.game.height/2, 0.5 , 'player');
     this.player.scale.setTo(0.3);
     
-    this.player.animations.add('fly', [0,1,2,3,2,1]);
-    this.player.animations.play('fly', 8, true);
+    jogo.criarAnimacao('fly',[0,1,2,3,2,1], this.player);
+    jogo.iniciarAnimacao('fly',8,true,this.player);
 
+  // create groups
     this.enemies = this.game.add.group();
+    this.coins = this.game.add.group();
 
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    // create score text
+    this.scoreText = this.game.add.bitmapText(10,10, 'minecraftia', 'Score: ' + this.score, 24);
+
+
+    jogo.activarFisica();
    
-    this.game.physics.arcade.enableBody(this.ground);
-    this.ground.body.allowGravity = false;
-    this.ground.body.immovable = true;
+    jogo.utilizarFisica(this.ground);
+    jogo.objectoPermiteFisica(this.ground,jogo.falso);
+    jogo.objectoNaoMovel(this.ground,jogo.verdade);
 
-    this.game.physics.arcade.enableBody(this.player);
-    this.player.body.collideWorldBounds = true;
-    this.player.body.gravity.y = 1000;
-    
-    this.cursor = this.input.keyboard.createCursorKeys();
-
-
-   
+    jogo.utilizarFisica(this.player);
+    jogo.objectoCollideComLimites(this.player,jogo.verdade);
+    jogo.definirGravidadeY(this.player,1000);
+       
 },
   update: function() {
-   /* 
+    
     if(this.coinTimer < this.game.time.now) {
       this.generateCoins();
       this.coinTimer = this.game.time.now + this.coinRate;
     } 
     this.game.physics.arcade.overlap(this.player, this.coins, this.coinHit, null, this);
-    */
+    
   
     
     if(this.enemyTimer < this.game.time.now) {
@@ -71,32 +72,31 @@ Welpworld.Game.prototype = {
     this.playerMovement();
   },
   shutdown: function() {
-  /*  this.coins.destroy();
+    this.coins.destroy();
    
     this.score = 0;
     this.coinTimer = 0;
-  */
+  
      this.enemies.destroy();
      this.enemyTimer = 0;
   },
   playerMovement: function() {
 
-     if(this.cursor.left.isDown)  {
-       this.player.body.velocity.x = -this.playerSpeed;
-     }else if(this.cursor.right.isDown)  {
-       this.player.body.velocity.x = this.playerSpeed;
+     if(jogo.teclaPressionada("esquerda"))  {
+       jogo.definirVelocidadeX(this.player, -this.playerSpeed);
+     }else if(jogo.teclaPressionada("direita"))  {
+        jogo.definirVelocidadeX(this.player, this.playerSpeed);
      }else{
-       this.player.body.velocity.x = 0;
+        jogo.definirVelocidadeX(this.player, 0);
      }
 
-     if(this.cursor.up.isDown && this.player.body.touching.down)  {
-       this.player.body.velocity.y = this.playerJump;
-       this.jump=false;
+     if(jogo.teclaPressionada("cima") && jogo.tocarNoChao(this.player))  {
+       jogo.definirVelocidadeY(this.player, this.playerJump );
       }
       
   },
   generateCoins: function() {
-   /* if(!this.previousCoinType || this.previousCoinType < 3) {
+    if(!this.previousCoinType || this.previousCoinType < 3) {
       var coinType = this.game.rnd.integer() % 5;
       switch(coinType) {
         case 0:
@@ -106,7 +106,7 @@ Welpworld.Game.prototype = {
         case 2:
           // if the cointype is 1 or 2, create a single coin
           //this.createCoin();
-          this.createCoin();
+          this.createCoinGroup(1, 1);
 
           break;
         case 3:
@@ -133,16 +133,29 @@ Welpworld.Game.prototype = {
         this.previousCoinType = 0;  
       }
       
-    }*/
+    }
+  },
+   createCoin: function(x, y) {
+   
+    // recycle our coins
+    // 
+    var coin = this.coins.getFirstExists(false);
+    if(!coin) {
+      coin = new Coin(this.game, 0, 0, 'coin');
+      this.coins.add(coin);
+    }
+    coin.reset(x, y);
+    coin.revive();
+    return coin;
   },
   createCoinGroup: function(columns, rows) {
     //create 4 coins in a group
-   /* var coinSpawnY = this.game.rnd.integerInRange(50, this.game.world.height - 192);
+    var coinSpawnY = this.game.rnd.integerInRange(200, 550);
     var coinRowCounter = 0;
     var coinColumnCounter = 0;
     var coin;
     for(var i = 0; i < columns * rows; i++) {
-      coin = this.createCoin(this.spawnX, coinSpawnY);
+      coin = this.createCoin(this.coinSpawnX+200, coinSpawnY);
       coin.x = coin.x + (coinColumnCounter * coin.width) + (coinColumnCounter * this.coinSpacingX);
       coin.y = coinSpawnY + (coinRowCounter * coin.height) + (coinRowCounter * this.coinSpacingY);
       coinColumnCounter++;
@@ -150,13 +163,13 @@ Welpworld.Game.prototype = {
         coinRowCounter++;
         coinColumnCounter = 0;
       } 
-    }*/
+    }
   },
 
 
   createEnemy: function() {
-    var x = this.game.width;
-    var y = this.game.rnd.integerInRange(30, this.game.world.height - 192);
+    var x = jogo.larguraTela();
+    var y = this.game.rnd.integerInRange(200, jogo.alturaTela() - 100 );
 
     var enemy = this.enemies.getFirstExists(false);
     if(!enemy) {
@@ -172,8 +185,8 @@ Welpworld.Game.prototype = {
   
   },
   coinHit: function(player, coin) {
-   /* this.score++;
-    this.coinSound.play();
+    this.score++;
+   // this.coinSound.play();
     coin.kill();
 
     var dummyCoin = new Coin(this.game, coin.x, coin.y);
@@ -186,7 +199,7 @@ Welpworld.Game.prototype = {
     scoreTween.onComplete.add(function() {
       dummyCoin.destroy();
       this.scoreText.text = 'Score: ' + this.score;
-    }, this);*/
+    }, this);
 
   },
   enemyHit: function(player, enemy) {
