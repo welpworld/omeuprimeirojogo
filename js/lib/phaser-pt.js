@@ -75,6 +75,14 @@ class Motor{
         return this.jogo.load.audio(id, [origem[0], origem[1]]);
     }
 
+    utilizarSom(id){
+        return this.jogo.add.audio(id);
+    }
+
+    IniciarSom(objecto, volume,repetir){
+         objecto.play('',0,volume,repetir);
+    }
+
     utilizarImagem(x,y, ancora,id){
        var imagem = this.jogo.add.sprite(x, y, id);
        imagem.anchor.setTo(ancora);
@@ -182,12 +190,42 @@ class Motor{
      definirVelocidadeX(objecto, valor){
             objecto.body.velocity.x = valor;
     }
-    
 
     tocarNoChao(objecto){
        return objecto.body.touching.down;
     }
+    espelharSprite(objecto,lado){
+        if(lado === "direita" && objecto.scale.x<0)
+            objecto.scale.x *= -1;
+        else if (lado === "esquerda" && objecto.scale.x>0)
+            objecto.scale.x *= -1;
 
-   
+    }
+
+    definirEscalaObjecto(objecto, escala){
+        objecto.scale.setTo(escala);
+    }
+    novoGrupo(){
+        return this.jogo.add.group();    
+    }
+    
+    colisao(objecto,colisao){
+         this.jogo.physics.arcade.collide(objecto, colisao);
+    }
+    sobreposicao(objecto,colisao,funcao, contexto){
+        this.jogo.physics.arcade.overlap(objecto,colisao,funcao, null, contexto);
+    }
+    numeroAleatorio(inicio, fim){
+        return this.jogo.rnd.integerInRange(inicio, fim );
+
+    }
+
+    adicionarElementoExistente(objecto){
+        this.jogo.add.existing(objecto);
+    }
+
+    devolvePrimeiroElemento(objecto, valor){
+       return objecto.getFirstExists(valor);
+    }
 } 
 

@@ -11,7 +11,7 @@ Welpworld.Boot.prototype = {
   
 },
   create: function() {
-    jogo.corFundo('#D62');
+    jogo.corFundo('#FFF');
     
     //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
     jogo.numeroToques(1);

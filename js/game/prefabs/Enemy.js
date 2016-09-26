@@ -1,11 +1,11 @@
 var Enemy = function(game, x, y, key, frame) {
-  key = 'missile';
+  key = 'inimigo';
   Phaser.Sprite.call(this, game, x, y, key, frame);
 
-  this.scale.setTo(.1);
+  this.scale.setTo(.5);
   this.anchor.setTo(0.5);
 
-  this.animations.add('fly');
+  //this.animations.add('fly');
 
   this.game.physics.arcade.enableBody(this);
   this.body.allowGravity = false;

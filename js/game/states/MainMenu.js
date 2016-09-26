@@ -3,12 +3,12 @@ Welpworld.MainMenu = function() {};
 Welpworld.MainMenu.prototype = {
   create: function() {
    
-    this.fundo = jogo.utilizarSprite(0,0,jogo.larguraTela(),jogo.alturaTela(),'background');
-      
-    this.foreground = jogo.utilizarSprite(0, 470, this.game.width, this.game.height - 533, 'foreground');
-
-    this.ground = jogo.utilizarSprite(0, this.game.height - 73, this.game.width, 73, 'ground');
-  
+   // this.fundo = jogo.utilizarSprite(0,0,jogo.larguraTela(),jogo.alturaTela(),'fundo');
+    //jogo.rotacaoImagem(this.fundo,-100,0);
+    //this.horizonte = jogo.utilizarSprite(0, 250, jogo.larguraTela(), 250+183.06, 'horizonte');
+   // jogo.rotacaoImagem(this.horizonte,-100,0);
+   // this.mar = jogo.utilizarSprite(0, jogo.alturaTela()-145, jogo.larguraTela(), jogo.alturaTela(), 'mar');
+  //  jogo.rotacaoImagem(this.mar,-250,0);
     //this.game.add.tween(this.player).to({y: this.player.y - 16}, 500, Phaser.Easing.Linear.NONE, true, 0, Infinity, true);
 
 
@@ -19,7 +19,7 @@ Welpworld.MainMenu.prototype = {
 
   },
   update: function() {
-   // if(this.game.input.keyboard.isDown(Phaser.KeyCode.ENTER))  {
+   
     if(jogo.teclaPressionada("enter")){
       jogo.activarEstado('Game');
     }
