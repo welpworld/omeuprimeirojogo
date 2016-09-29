@@ -11,11 +11,17 @@ class Motor{
             "esquerda" : Phaser.KeyCode.LEFT,
             "direita" : Phaser.KeyCode.RIGHT,
             "baixo" : Phaser.KeyCode.DOWN,
+            "espaco" : Phaser.KeyCode.SPACEBAR,
         }
-       
+        this.propriedade={
+            "verificarLimitesTela" : 'checkWorldBounds',
+            "destruirForaTela" : 'outOfBoundsKill',
+            "velocidadeX" : 'body.velocity.x',
+        }
     }
 
-   
+    
+
     tela(width,height,parent){
         this.jogo = new Phaser.Game(width,height,Phaser.AUTO,parent);
     }
@@ -137,11 +143,13 @@ class Motor{
         return this.jogo.add.text(x,y,texto, estilo);
     }
 
+    alterarTexto(objecto, texto){
+        return objecto.text = texto;
+    }
+
     adicionarTextoBitmap(x,y,id,texto,tamanho){
         return this.jogo.add.bitmapText(x, y, id,texto,tamanho);
     }
-
-
 
     teclaPressionada(idTecla){
         if(this.jogo.input.keyboard.isDown(this.tecla[idTecla]))
@@ -163,7 +171,10 @@ class Motor{
     utilizarFisica(objecto){
         this.jogo.physics.arcade.enableBody(objecto);
     }
-    
+    utilizarFisicaGrupo(grupo){
+        grupo.enableBody = true;
+        grupo.physicsBodyType = Phaser.Physics.ARCADE;
+    }
     objectoPermiteFisica(objecto,valor){
         objecto.body.allowGravity = valor;
     }
@@ -227,5 +238,43 @@ class Motor{
     devolvePrimeiroElemento(objecto, valor){
        return objecto.getFirstExists(valor);
     }
+
+    numeroMaximo(){
+        return Number.MAX_VALUE;
+    }
+
+    tempoAgora(){
+        return this.jogo.time.now;
+    }
+
+    definirParaTodos(objecto, propriedade, valor){
+        objecto.setAll(this.propriedade[propriedade],true);
+    }
+    
+    criarVarios(objecto, numeroObejctos, id){
+        objecto.createMultiple(numeroObejctos, id);
+    }
+    destruirObjecto(objecto){
+        objecto.kill();
+    }
+
+    destruirGrupo(objecto){
+        objecto.destroy();
+    }
+
+    definirPosicao(objecto, x, y){
+        objecto.reset(x,y);
+    }
+
+    adicionarRectangulo(xInicial,yInicial, xFinal,yFinal,cor,alpha){
+        var bmd = this.jogo.add.bitmapData(xFinal-xInicial, yFinal-yInicial);
+        bmd.ctx.fillStyle = cor;
+        bmd.ctx.fillRect(xInicial,yInicial, xFinal, yFinal);
+        var rectangulo = this.jogo.add.sprite(xInicial, yInicial, bmd);
+        rectangulo.alpha = 0.7;
+
+        return rectangulo;
+    }
+
 } 
 

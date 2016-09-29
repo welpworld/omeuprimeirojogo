@@ -14,13 +14,13 @@ Welpworld.Preload.prototype = {
     
     jogo.definirBarraCarregamento(this.barra);
  
-    jogo.carregarImagem('fundo', 'assets/images/fundo.png');
-     jogo.carregarImagem('horizonte', 'assets/images/mar_horizonte.svg');
-    jogo.carregarImagem('mar', 'assets/images/mar.svg');
+    jogo.carregarImagem('fundo', 'assets/images/capture.png');
+    jogo.carregarImagem('horizonte', 'assets/images/horizonte.png');
+    jogo.carregarImagem('mar', 'assets/images/mar.png');
     
-    jogo.carregarSprite('jogador', 'assets/images/barco bom.svg', 213.85, 175.13, 2);
-    jogo.carregarSprite('inimigo', 'assets/images/barco mau.svg',224.8, 175.13,2);
-    jogo.carregarImagem('bomba', 'assets/images/bomba.svg');
+    jogo.carregarSprite('jogador', 'assets/images/barco bom.png', 213.85, 175.13, 2);
+    jogo.carregarSprite('inimigo', 'assets/images/barco mau.png',224.8, 175.13,2);
+    jogo.carregarImagem('bomba', 'assets/images/bomba.png');
 
      //this.load.atlas('coin', 'assets/images/coin-spritesheet.png', 'assets/images/coin-spritesheet-definition.json');
 

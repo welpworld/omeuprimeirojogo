@@ -1,24 +1,20 @@
 Welpworld.Game = function() {
  
-  this.playerMinAngle = -20;
-  this.playerMaxAngle = 20;
-  this.playerSpeed = 300;
-  this.playerJump = -750;
+  this.velociadeJogador = 300;
   
-  this.coinRate = 2000;
-  this.coinTimer = 0;
+  this.frequenciaBomba = 2000;
+  this.proximaBomba = 0;
 
-  this.enemyRate = 3000;
-  this.enemyTimer = 0;
+  this.frequenciaInimigo = 1000;
+  this.proximoInimigo = 0;
 
-  this.score = 0;
-  this.previousCoinType = null;
+  this.pontos = 0;
 
- 
-  this.coinSpacingX = 10;
-  this.coinSpacingY = 10;
+  this.proximoTiro=0;
+  this.frequenciaBala=500;
 
-  this.jump = false;
+  this.vivo=jogo.verdade;
+  this.reiniciar = jogo.falso;
 };
 
 Welpworld.Game.prototype = {
@@ -34,17 +30,34 @@ Welpworld.Game.prototype = {
     jogo.rotacaoImagem(this.mar,-250,0);
     
     this.jogador = jogo.utilizarImagem(500, 300, 0.5 , 'jogador');
-    jogo.definirEscalaObjecto(this.jogador,.7);
+    jogo.definirEscalaObjecto(this.jogador,.5);
     
-    //jogo.criarAnimacao('fly',[0,1,2,3,2,1], this.player);
-    //jogo.iniciarAnimacao('fly',8,true,this.player);
-
+    jogo.criarAnimacao('vento',[0,1], this.jogador);
+    jogo.iniciarAnimacao('vento',1,true,this.jogador);
+  
     //create groups
-    this.enemies =  this.game.add.group();   
-    this.coins = jogo.novoGrupo();
+    this.inimigos = jogo.novoGrupo();   
+    this.bombas = jogo.novoGrupo();
+    this.balas = jogo.novoGrupo();
 
-    // create score text
-    this.scoreText = jogo.adicionarTextoBitmap(10,10, 'minecraftia', 'Score: ' + this.score, 24);
+    jogo.utilizarFisicaGrupo(this.balas);
+    jogo.utilizarFisicaGrupo(this.bombas);
+    jogo.utilizarFisicaGrupo(this.inimigos);
+
+    jogo.criarVarios(this.balas, 5, 'bomba');
+    jogo.definirParaTodos(this.balas, 'verificarLimitesTela',jogo.verdade);
+    jogo.definirParaTodos(this.balas, 'destruirForaTela', jogo.verdade);
+
+    jogo.criarVarios(this.bombas, 5, 'bomba');
+    jogo.definirParaTodos(this.bombas, 'verificarLimitesTela',jogo.verdade);
+    jogo.definirParaTodos(this.bombas, 'destruirForaTela', jogo.verdade);
+
+    jogo.criarVarios(this.inimigos, 10, 'inimigo');
+    jogo.definirParaTodos(this.inimigos, 'verificarLimitesTela',jogo.verdade);
+    jogo.definirParaTodos(this.inimigos, 'destruirForaTela', jogo.verdade);
+  
+   
+    this.textoPontos = jogo.adicionarTextoBitmap(10,10, 'minecraftia', 'Score: ' + this.pontos, 24);
 
     jogo.activarFisica();
 
@@ -54,135 +67,140 @@ Welpworld.Game.prototype = {
        
 },
   update: function() {
-    
-    jogo.espelharSprite(this.jogador,"direita");
-    if(this.coinTimer < this.game.time.now) {
-      this.createCoin();
-      this.coinTimer = this.game.time.now + this.coinRate;
-    } 
-    jogo.sobreposicao(this.jogador, this.coins, this.coinHit, this);
-    
 
-  
-    if(this.enemyTimer < this.game.time.now) {
-      this.createEnemy();
-      this.enemyTimer = this.game.time.now + this.enemyRate;
+    if(this.proximaBomba < jogo.tempoAgora()) {
+      this.criarBomba();
+      this.proximaBomba = jogo.tempoAgora() + this.frequenciaBomba;
+    } 
+   
+    if(this.proximoInimigo < jogo.tempoAgora()) {
+      this.criarInimigo();
+      this.proximoInimigo = jogo.tempoAgora() + this.frequenciaInimigo;
     }
 
-   // jogo.sobreposicao(this.jogador, this.enemies, this.enemyHit, this);
-   // jogo.colisao(this.player, this.mar);
+   jogo.sobreposicao(this.balas, this.inimigos, this.balaColideInimigo,this)
+   jogo.sobreposicao(this.inimigos, this.jogador, this.InimigoColideJogador, this);
+   jogo.sobreposicao(this.bombas, this.jogador, this.bombaColideJogador, this);
 
-    this.playerMovement();
+   jogo.espelharSprite(this.jogador,"direita");
+   this.movimentoJogador();
+
+   if(jogo.teclaPressionada("enter") && this.reiniciar===jogo.verdade)
+      this.recomecar();
   },
-  shutdown: function() {
-    this.coins.destroy();
-   
-    this.score = 0;
-    this.coinTimer = 0;
   
-    this.enemies.destroy();
-    this.enemyTimer = 0;
-  },
-  playerMovement: function() {
+  movimentoJogador: function() {
 
      if(jogo.teclaPressionada("esquerda"))  {
-       jogo.definirVelocidadeX(this.jogador, -this.playerSpeed);
+       jogo.definirVelocidadeX(this.jogador, -this.velociadeJogador);
        jogo.espelharSprite(this.jogador,"esquerda");
      }else if(jogo.teclaPressionada("direita"))  {
         jogo.espelharSprite(this.jogador,"direita");
-        jogo.definirVelocidadeX(this.jogador, this.playerSpeed);
+        jogo.definirVelocidadeX(this.jogador, this.velociadeJogador);
+     }else {
+        jogo.definirVelocidadeX(this.jogador,0);
+     }
+     if(jogo.teclaPressionada("cima") && this.jogador.y > 250){
+        jogo.definirVelocidadeY(this.jogador, -this.velociadeJogador);
+     }else if (jogo.teclaPressionada("baixo") && this.jogador.y < jogo.alturaTela()-75){
+       jogo.definirVelocidadeY(this.jogador, this.velociadeJogador);
      }else{
-        jogo.definirVelocidadeX(this.jogador, 0);
+        jogo.definirVelocidadeY(this.jogador,0);
      }
 
-    /* if(jogo.teclaPressionada("cima") && jogo.tocarNoChao(this.jogador))  {
-       jogo.definirVelocidadeY(this.jogador, this.playerJump );
-      }*/
+     if(jogo.teclaPressionada("espaco") && this.vivo===jogo.verdade){
+        if (jogo.tempoAgora() > this.proximoTiro && this.balas.countDead() > 0)
+        {
+          this.proximoTiro = jogo.tempoAgora() + this.frequenciaBala;
+          this.criarBala();
+         
+       }
+     }
       
   },
-   createCoin: function() {
+  criarBala: function(){
+     var bala = this.balas.getFirstDead();
+          jogo.definirEscalaObjecto(bala,0.6);
+
+          jogo.definirPosicao(bala, this.jogador.x - 10, this.jogador.y + 30)
+          jogo.definirVelocidadeX(bala,350);
+  },
+   criarBomba: function() {
    
-    var x = -10;
-    var y =  jogo.numeroAleatorio(0, 400);
-    var coin = jogo.devolvePrimeiroElemento(this.coins,false);
-    if(!coin) {
-      coin = new Coin(this.game, x, y, 'coin');
-      this.coins.add(coin);
-    }
-    coin.reset(x, y);
-    coin.revive();
-    return coin;
-  },
-  createCoinGroup: function(columns, rows) {
-    //create 4 coins in a group
-    var coinSpawnX = jogo.larguraTela();
-    var coinSpawnY =  jogo.numeroAleatorio(0, 400);
-    var coinRowCounter = 0;
-    var coinColumnCounter = 0;
-    var coin;
-    for(var i = 0; i < columns * rows; i++) {
-      coin = this.createCoin(coinSpawnX , coinSpawnY);
-      coin.x = coin.x + (coinColumnCounter * coin.width) + (coinColumnCounter * this.coinSpacingX);
-      coin.y = coinSpawnY + (coinRowCounter * coin.height) + (coinRowCounter * this.coinSpacingY);
-      coinColumnCounter++;
-      if(i+1 >= columns && (i+1) % columns === 0) {
-        coinRowCounter++;
-        coinColumnCounter = 0;
-      } 
-    }
-  },
+    var x = jogo.numeroAleatorio(50, 150);
+    var y = -20;
+    var gravidadeY = jogo.numeroAleatorio(100, 500);
+    var bomba = this.bombas.getFirstDead();
 
-
-  createEnemy: function() {
+    jogo.definirPosicao(bomba, x, y);
+    jogo.definirGravidadeY(bomba, gravidadeY);
+    jogo.definirVelocidadeX(bomba,200);
+  },
+  
+  criarInimigo: function() {
     var x = jogo.larguraTela();
-    var y = jogo.numeroAleatorio(jogo.alturaTela()-180, jogo.alturaTela()-20  );
+    var y = jogo.numeroAleatorio(jogo.alturaTela()-180, jogo.alturaTela()-75);
 
-    var enemy = this.enemies.getFirstExists(false);
-    if(!enemy) {
-      enemy = new Enemy(this.game, 0, 0);
-      this.enemies.add(enemy);
-    }
-    enemy.reset(x, y);
-    enemy.revive();
+    var inimigo = this.inimigos.getFirstDead();
+    jogo.definirEscalaObjecto(inimigo,0.4);
+
+    jogo.definirPosicao(inimigo, x, y)
+    jogo.definirVelocidadeX(inimigo,-200);
   },
-  coinHit: function(player, coin) {
-   /* this.score++;
-   // this.coinSound.play();
-    coin.kill();
-
-    var dummyCoin = new Coin(this.game, coin.x, coin.y);
-    jogo.adicionarElementoExistente(dummyCoin);
-
-    //jogo.iniciarAnimacao('spin', 40, true,dummyCoin);
-
-    var scoreTween = this.game.add.tween(dummyCoin).to({x: 50, y: 50}, 300, Phaser.Easing.Linear.NONE, true);
-
-    scoreTween.onComplete.add(function() {
-      dummyCoin.destroy();
-      this.scoreText.text = 'Score: ' + this.score;
-    }, this);*/
-     player.kill();
-    coin.kill();
-
-    this.enemies.setAll('body.velocity.x', 0);
+  bombaColideJogador: function(bomba, jogador) {
    
-    this.enemyTimer = Number.MAX_VALUE;
-
-     this.shutdown();
-     jogo.activarEstado('Game');
+    jogo.destruirObjecto(bomba);
+    jogo.destruirObjecto(jogador);
+    this.vivo=jogo.falso;
+    
+    this.fimJogo();
 
   },
-  enemyHit: function(player, enemy) {
-    player.kill();
-    enemy.kill();
+  InimigoColideJogador: function(inimigo, jogador) {
+     jogo.destruirObjecto(inimigo);
+     jogo.destruirObjecto(jogador);
+     this.vivo=jogo.falso;
+     
+     this.fimJogo();
+  },
+  balaColideInimigo: function(inimigo,balas){
+    jogo.destruirObjecto(inimigo);
+    jogo.destruirObjecto(balas);
+ 
+    jogo.alterarTexto(this.textoPontos, 'Score: ' + ++this.pontos);
+  },
+  fimJogo: function() {
+    
+    //this.pontos = 0;
+    this.proximaBomba = jogo.numeroMaximo();
+    this.proximoInimigo = jogo.numeroMaximo();
+    jogo.rotacaoImagem(this.fundo, 0,0);
+    jogo.rotacaoImagem(this.horizonte, 0,0);
+    jogo.rotacaoImagem(this.mar,0,0);
 
-    this.enemies.setAll('body.velocity.x', 0);
-   
-    this.enemyTimer = Number.MAX_VALUE;
+    jogo.definirParaTodos(this.inimigos, 'velocidadeX',0);
+    jogo.definirParaTodos(this.bombas, 'velocidadeX',0);
 
-     this.shutdown();
-     jogo.activarEstado('Game');
+    jogo.adicionarRectangulo(0,0,jogo.larguraTela(),jogo.alturaTela(),'#000',0.7)
+    
+    var texto="Pontuacao final: "+ this.pontos + "\n    Muito Bem!"
+    var pontuacao=jogo.adicionarTextoBitmap(0,0,'minecraftia', texto,28);
+    pontuacao.x = jogo.larguraTela() / 2 - jogo.largura(pontuacao) /2 ;
+    pontuacao.y = jogo.alturaTela() / 2 - jogo.altura(pontuacao)  / 2 - 25;
+    
+    var reiniciar=jogo.adicionarTextoBitmap(0,0,'minecraftia', '(Pressiona ENTER para reiniciar)',12);
+    reiniciar.x = jogo.larguraTela() / 2 - jogo.largura(reiniciar) /2 ;
+    reiniciar.y = jogo.alturaTela() / 2 - jogo.altura(reiniciar) / 2 + 50;
 
-  }
+    this.reiniciar=jogo.verdade;
+  },
+  recomecar: function() {
+    this.reiniciar = jogo.falso;
+    this.pontos=0;
+    this.proximaBomba = 0;
+    this.proximoInimigo = 0;
+    this.vivo = jogo.verdade;
+    jogo.activarEstado('Game');
+}
 
 }
