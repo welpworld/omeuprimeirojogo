@@ -23,7 +23,7 @@ Welpworld.Game.prototype = {
     this.fundo = jogo.utilizarSprite(0,0,jogo.larguraTela(),jogo.alturaTela(),'fundo');
     jogo.rotacaoImagem(this.fundo,-100,0);
    
-    this.horizonte = jogo.utilizarSprite(0, 250, jogo.larguraTela(), 250+183.06, 'horizonte');
+    this.horizonte = jogo.utilizarSprite(0, 250, jogo.larguraTela(), jogo.alturaTela(), 'horizonte');
     jogo.rotacaoImagem(this.horizonte,-100,0);
     
     this.mar = jogo.utilizarSprite(0, jogo.alturaTela()-145, jogo.larguraTela(), jogo.alturaTela(), 'mar');

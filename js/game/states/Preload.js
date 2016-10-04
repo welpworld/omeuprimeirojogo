@@ -15,8 +15,8 @@ Welpworld.Preload.prototype = {
     jogo.definirBarraCarregamento(this.barra);
  
     jogo.carregarImagem('fundo', 'assets/images/capture.png');
-    jogo.carregarImagem('horizonte', 'assets/images/horizonte.png');
-    jogo.carregarImagem('mar', 'assets/images/mar.png');
+    jogo.carregarImagem('horizonte', 'assets/images/mar 2.png');
+    jogo.carregarImagem('mar', 'assets/images/mar 1.png');
     
     jogo.carregarSprite('jogador', 'assets/images/barco bom.png', 213.85, 175.13, 2);
     jogo.carregarSprite('inimigo', 'assets/images/barco mau.png',224.8, 175.13,2);
