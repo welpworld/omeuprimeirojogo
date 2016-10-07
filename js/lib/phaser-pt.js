@@ -271,10 +271,20 @@ class Motor{
         bmd.ctx.fillStyle = cor;
         bmd.ctx.fillRect(xInicial,yInicial, xFinal, yFinal);
         var rectangulo = this.jogo.add.sprite(xInicial, yInicial, bmd);
-        rectangulo.alpha = 0.7;
+        rectangulo.alpha = alpha;
 
         return rectangulo;
     }
-
+    
+    numeroObjectosDestruidos(grupo){
+    
+        return grupo.countDead();
+    
+        
+    }
+    primeiroElementoDestruido(grupo){
+        return grupo.getFirstDead();
+    }
+    
 } 
 

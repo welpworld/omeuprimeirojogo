@@ -1,6 +1,7 @@
 Welpworld.Game = function() {
  
   this.velociadeJogador = 300;
+  this.alturaMaxima=250;
   
   this.frequenciaBomba = 2000;
   this.proximaBomba = 0;
@@ -41,17 +42,16 @@ Welpworld.Game.prototype = {
     this.balas = jogo.novoGrupo();
 
     jogo.utilizarFisicaGrupo(this.balas);
-    jogo.utilizarFisicaGrupo(this.bombas);
-    jogo.utilizarFisicaGrupo(this.inimigos);
-
     jogo.criarVarios(this.balas, 5, 'bomba');
     jogo.definirParaTodos(this.balas, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.balas, 'destruirForaTela', jogo.verdade);
 
+    jogo.utilizarFisicaGrupo(this.bombas);
     jogo.criarVarios(this.bombas, 5, 'bomba');
     jogo.definirParaTodos(this.bombas, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.bombas, 'destruirForaTela', jogo.verdade);
-
+    
+    jogo.utilizarFisicaGrupo(this.inimigos);
     jogo.criarVarios(this.inimigos, 10, 'inimigo');
     jogo.definirParaTodos(this.inimigos, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.inimigos, 'destruirForaTela', jogo.verdade);
@@ -63,7 +63,6 @@ Welpworld.Game.prototype = {
 
     jogo.utilizarFisica(this.jogador);
     jogo.objectoCollideComLimites(this.jogador,jogo.verdade);
-    jogo.definirGravidadeY(this.jogador,0);
        
 },
   update: function() {
@@ -82,7 +81,7 @@ Welpworld.Game.prototype = {
    jogo.sobreposicao(this.inimigos, this.jogador, this.InimigoColideJogador, this);
    jogo.sobreposicao(this.bombas, this.jogador, this.bombaColideJogador, this);
 
-   jogo.espelharSprite(this.jogador,"direita");
+ 
    this.movimentoJogador();
 
    if(jogo.teclaPressionada("enter") && this.reiniciar===jogo.verdade)
@@ -99,17 +98,18 @@ Welpworld.Game.prototype = {
         jogo.definirVelocidadeX(this.jogador, this.velociadeJogador);
      }else {
         jogo.definirVelocidadeX(this.jogador,0);
+        jogo.espelharSprite(this.jogador,"direita");
      }
-     if(jogo.teclaPressionada("cima") && this.jogador.y > 250){
+     if(jogo.teclaPressionada("cima") && this.jogador.y > this.alturaMaxima){
         jogo.definirVelocidadeY(this.jogador, -this.velociadeJogador);
-     }else if (jogo.teclaPressionada("baixo") && this.jogador.y < jogo.alturaTela()-75){
+     }else if (jogo.teclaPressionada("baixo")){
        jogo.definirVelocidadeY(this.jogador, this.velociadeJogador);
      }else{
         jogo.definirVelocidadeY(this.jogador,0);
      }
 
      if(jogo.teclaPressionada("espaco") && this.vivo===jogo.verdade){
-        if (jogo.tempoAgora() > this.proximoTiro && this.balas.countDead() > 0)
+        if (jogo.tempoAgora() > this.proximoTiro && jogo.numeroObjectosDestruidos(this.balas) > 0)
         {
           this.proximoTiro = jogo.tempoAgora() + this.frequenciaBala;
           this.criarBala();
@@ -119,18 +119,18 @@ Welpworld.Game.prototype = {
       
   },
   criarBala: function(){
-     var bala = this.balas.getFirstDead();
-          jogo.definirEscalaObjecto(bala,0.6);
+    var bala = jogo.primeiroElementoDestruido(this.balas);
+    jogo.definirEscalaObjecto(bala,0.6);
 
-          jogo.definirPosicao(bala, this.jogador.x - 10, this.jogador.y + 30)
-          jogo.definirVelocidadeX(bala,350);
+    jogo.definirPosicao(bala, this.jogador.x - 10, this.jogador.y + 30)
+    jogo.definirVelocidadeX(bala, 350);
   },
    criarBomba: function() {
    
     var x = jogo.numeroAleatorio(50, 150);
     var y = -20;
     var gravidadeY = jogo.numeroAleatorio(100, 500);
-    var bomba = this.bombas.getFirstDead();
+    var bomba = jogo.primeiroElementoDestruido(this.bombas);
 
     jogo.definirPosicao(bomba, x, y);
     jogo.definirGravidadeY(bomba, gravidadeY);
@@ -141,7 +141,7 @@ Welpworld.Game.prototype = {
     var x = jogo.larguraTela();
     var y = jogo.numeroAleatorio(jogo.alturaTela()-180, jogo.alturaTela()-75);
 
-    var inimigo = this.inimigos.getFirstDead();
+    var inimigo = jogo.primeiroElementoDestruido(this.inimigos);
     jogo.definirEscalaObjecto(inimigo,0.4);
 
     jogo.definirPosicao(inimigo, x, y)
