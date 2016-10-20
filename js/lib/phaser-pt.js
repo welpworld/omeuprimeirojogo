@@ -12,6 +12,8 @@ class Motor{
             "direita" : Phaser.KeyCode.RIGHT,
             "baixo" : Phaser.KeyCode.DOWN,
             "espaco" : Phaser.KeyCode.SPACEBAR,
+            "a" : Phaser.KeyCode.A,
+            
         }
         this.propriedade={
             "verificarLimitesTela" : 'checkWorldBounds',

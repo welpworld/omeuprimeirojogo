@@ -42,22 +42,24 @@ Welpworld.Game.prototype = {
     this.balas = jogo.novoGrupo();
 
     jogo.utilizarFisicaGrupo(this.balas);
-    jogo.criarVarios(this.balas, 5, 'bomba');
+        jogo.criarVarios(this.balas, 5, 'bomba');
     jogo.definirParaTodos(this.balas, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.balas, 'destruirForaTela', jogo.verdade);
 
+
     jogo.utilizarFisicaGrupo(this.bombas);
-    jogo.criarVarios(this.bombas, 5, 'bomba');
+     jogo.criarVarios(this.bombas, 5, 'bomba');
     jogo.definirParaTodos(this.bombas, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.bombas, 'destruirForaTela', jogo.verdade);
     
+     
     jogo.utilizarFisicaGrupo(this.inimigos);
     jogo.criarVarios(this.inimigos, 10, 'inimigo');
     jogo.definirParaTodos(this.inimigos, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.inimigos, 'destruirForaTela', jogo.verdade);
-  
+
    
-    this.textoPontos = jogo.adicionarTextoBitmap(10,10, 'minecraftia', 'Score: ' + this.pontos, 24);
+    this.textoPontos = jogo.adicionarTextoBitmap(10,10, 'minecraftia', 'Pontuacao: ' + this.pontos, 24);
 
     jogo.activarFisica();
 
@@ -67,7 +69,7 @@ Welpworld.Game.prototype = {
 },
   update: function() {
 
-    if(this.proximaBomba < jogo.tempoAgora()) {
+    if(jogo.tempoAgora()>this.proximaBomba ) {
       this.criarBomba();
       this.proximaBomba = jogo.tempoAgora() + this.frequenciaBomba;
     } 
@@ -113,8 +115,8 @@ Welpworld.Game.prototype = {
         {
           this.proximoTiro = jogo.tempoAgora() + this.frequenciaBala;
           this.criarBala();
-         
-       }
+          
+        }
      }
       
   },
@@ -133,13 +135,14 @@ Welpworld.Game.prototype = {
     var bomba = jogo.primeiroElementoDestruido(this.bombas);
 
     jogo.definirPosicao(bomba, x, y);
-    jogo.definirGravidadeY(bomba, gravidadeY);
     jogo.definirVelocidadeX(bomba,200);
+    jogo.definirGravidadeY(bomba, gravidadeY);
+  
   },
   
   criarInimigo: function() {
     var x = jogo.larguraTela();
-    var y = jogo.numeroAleatorio(jogo.alturaTela()-180, jogo.alturaTela()-75);
+    var y = jogo.numeroAleatorio(this.alturaMaxima, jogo.alturaTela()-75);
 
     var inimigo = jogo.primeiroElementoDestruido(this.inimigos);
     jogo.definirEscalaObjecto(inimigo,0.4);
@@ -151,7 +154,6 @@ Welpworld.Game.prototype = {
    
     jogo.destruirObjecto(bomba);
     jogo.destruirObjecto(jogador);
-    this.vivo=jogo.falso;
     
     this.fimJogo();
 
@@ -159,27 +161,31 @@ Welpworld.Game.prototype = {
   InimigoColideJogador: function(inimigo, jogador) {
      jogo.destruirObjecto(inimigo);
      jogo.destruirObjecto(jogador);
-     this.vivo=jogo.falso;
+    
      
      this.fimJogo();
   },
   balaColideInimigo: function(inimigo,balas){
     jogo.destruirObjecto(inimigo);
     jogo.destruirObjecto(balas);
- 
-    jogo.alterarTexto(this.textoPontos, 'Score: ' + ++this.pontos);
+    
+    this.pontos= this.pontos + 1;
+    jogo.alterarTexto(this.textoPontos, 'Pontuacao: ' + this.pontos);
   },
   fimJogo: function() {
     
     //this.pontos = 0;
     this.proximaBomba = jogo.numeroMaximo();
     this.proximoInimigo = jogo.numeroMaximo();
+    
     jogo.rotacaoImagem(this.fundo, 0,0);
     jogo.rotacaoImagem(this.horizonte, 0,0);
     jogo.rotacaoImagem(this.mar,0,0);
-
+    
     jogo.definirParaTodos(this.inimigos, 'velocidadeX',0);
-    jogo.definirParaTodos(this.bombas, 'velocidadeX',0);
+    //jogo.definirParaTodos(this.bombas, 'velocidadeX',0);
+    
+    this.vivo=jogo.falso;
 
     jogo.adicionarRectangulo(0,0,jogo.larguraTela(),jogo.alturaTela(),'#000',0.7)
     
@@ -188,7 +194,8 @@ Welpworld.Game.prototype = {
     pontuacao.x = jogo.larguraTela() / 2 - jogo.largura(pontuacao) /2 ;
     pontuacao.y = jogo.alturaTela() / 2 - jogo.altura(pontuacao)  / 2 - 25;
     
-    var reiniciar=jogo.adicionarTextoBitmap(0,0,'minecraftia', '(Pressiona ENTER para reiniciar)',12);
+    texto = '(Pressiona ENTER para reiniciar)';
+    var reiniciar=jogo.adicionarTextoBitmap(0,0,'minecraftia', texto,12);
     reiniciar.x = jogo.larguraTela() / 2 - jogo.largura(reiniciar) /2 ;
     reiniciar.y = jogo.alturaTela() / 2 - jogo.altura(reiniciar) / 2 + 50;
 
@@ -196,9 +203,10 @@ Welpworld.Game.prototype = {
   },
   recomecar: function() {
     this.reiniciar = jogo.falso;
-    this.pontos=0;
+    this.pontos = 0;
     this.proximaBomba = 0;
     this.proximoInimigo = 0;
+    this.proximoTiro = 0;
     this.vivo = jogo.verdade;
     jogo.activarEstado('Game');
 }
