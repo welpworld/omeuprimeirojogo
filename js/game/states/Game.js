@@ -42,7 +42,7 @@ Welpworld.Game.prototype = {
     this.balas = jogo.novoGrupo();
 
     jogo.utilizarFisicaGrupo(this.balas);
-        jogo.criarVarios(this.balas, 5, 'bomba');
+    jogo.criarVarios(this.balas, 5, 'bomba');
     jogo.definirParaTodos(this.balas, 'verificarLimitesTela',jogo.verdade);
     jogo.definirParaTodos(this.balas, 'destruirForaTela', jogo.verdade);
 
@@ -91,6 +91,14 @@ Welpworld.Game.prototype = {
   },
   
   movimentoJogador: function() {
+    
+    if(jogo.teclaPressionada("cima") && this.jogador.y > this.alturaMaxima){
+        jogo.definirVelocidadeY(this.jogador, -this.velociadeJogador);
+     }else if (jogo.teclaPressionada("baixo")){
+       jogo.definirVelocidadeY(this.jogador, this.velociadeJogador);
+     }else{
+        jogo.definirVelocidadeY(this.jogador,0);
+     }
 
      if(jogo.teclaPressionada("esquerda"))  {
        jogo.definirVelocidadeX(this.jogador, -this.velociadeJogador);
@@ -102,14 +110,7 @@ Welpworld.Game.prototype = {
         jogo.definirVelocidadeX(this.jogador,0);
         jogo.espelharSprite(this.jogador,"direita");
      }
-     if(jogo.teclaPressionada("cima") && this.jogador.y > this.alturaMaxima){
-        jogo.definirVelocidadeY(this.jogador, -this.velociadeJogador);
-     }else if (jogo.teclaPressionada("baixo")){
-       jogo.definirVelocidadeY(this.jogador, this.velociadeJogador);
-     }else{
-        jogo.definirVelocidadeY(this.jogador,0);
-     }
-
+     
      if(jogo.teclaPressionada("espaco") && this.vivo===jogo.verdade){
         if (jogo.tempoAgora() > this.proximoTiro && jogo.numeroObjectosDestruidos(this.balas) > 0)
         {

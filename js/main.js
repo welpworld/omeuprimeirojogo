@@ -1,8 +1,5 @@
 var jogo = new Motor();
 
-
-
-
 jogo.tela(1080,446,'jogo');
 
 jogo.adicionarEstado('Boot', Welpworld.Boot);

@@ -3,8 +3,6 @@ Welpworld.Preload = function() {
   
 };
 
-
-
 Welpworld.Preload.prototype = {
   preload: function() {
 
