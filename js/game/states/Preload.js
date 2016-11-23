@@ -16,8 +16,8 @@ Welpworld.Preload.prototype = {
     jogo.carregarImagem('horizonte', 'assets/images/mar 2.png');
     jogo.carregarImagem('mar', 'assets/images/mar 1.png');
     
-    jogo.carregarSprite('jogador', 'assets/images/barco bom.png', 213.85, 175.13, 2);
-    jogo.carregarSprite('inimigo', 'assets/images/barco mau.png', 224.8, 175.13,2);
+    jogo.carregarSprite('jogador', 'assets/images/barco_bom.png', 213.85, 175.13, 2);
+    jogo.carregarSprite('inimigo', 'assets/images/barco_mau.png', 224.8, 175.13,1);
     jogo.carregarImagem('bomba', 'assets/images/bomba.png');
 
     jogo.carregarTextoBitmap('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
@@ -26,13 +26,9 @@ Welpworld.Preload.prototype = {
     jogo.carregamentoCompleto(this.carregamentoCompleto,this);
   },
   
- /* create: function() {
-    //this.barra.cropEnabled = false;
-  }, */
-  
   update: function() {
    if( this.pronto === jogo.verdade ){
-    jogo.activarEstado('MainMenu');
+   jogo.activarEstado('MainMenu');
     }
   },
  
