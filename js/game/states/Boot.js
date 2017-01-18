@@ -8,6 +8,14 @@ Welpworld.Boot.prototype = {
 
     jogo.carregarImagem('logo', 'assets/images/logo.png');
     jogo.carregarImagem('preloadbar', 'assets/images/preloader-bar.png');
+
+ jogo.jogo.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+			jogo.jogo.scale.forceOrientation(true, false);
+
+      jogo.jogo.scale.enterIncorrectOrientation.add(this.handleIncorrect);
+      jogo.jogo.scale.leaveIncorrectOrientation.add(this.handleCorrect);
+   
+
   
 },
   create: function() {
@@ -17,9 +25,20 @@ Welpworld.Boot.prototype = {
     jogo.numeroToques(1);
 
     if (jogo.paraDispositivoMovel()) {
-      jogo.definirDimensoesMovel(568,600,2048,1536,true);
+      jogo.definirDimensoesMovel(800,446,1200,446,true);
     }
 
     jogo.activarEstado('Preloader');
-  }
+  },
+  	 handleIncorrect:function(){
+   	if(!jogo.jogo.device.desktop){
+     		document.getElementById("turn").style.display="block";
+     	}
+	},
+	
+	handleCorrect:function(){
+		if(!jogo.jogo.device.desktop){
+			document.getElementById("turn").style.display="none";
+		}
+	}
 };

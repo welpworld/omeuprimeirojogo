@@ -19,6 +19,9 @@ Welpworld.Game = function() {
 };
 
 Welpworld.Game.prototype = {
+  preload: function(){
+     
+  },
   create: function() {
 
     this.fundo = jogo.utilizarSprite(0,0,jogo.larguraTela(),jogo.alturaTela(),'fundo');
@@ -35,7 +38,13 @@ Welpworld.Game.prototype = {
     
     jogo.criarAnimacao('vento',[0,1], this.jogador);
     jogo.iniciarAnimacao('vento',1,true,this.jogador);
-  
+
+    if (jogo.paraDispositivoMovel()) {
+      this.shoot = jogo.utilizarImagem(jogo.larguraTela()-100, 65, 0.5 , 'shoot');
+      jogo.definirEscalaObjecto(this.shoot,.5);
+      this.shoot.inputEnabled = true;
+      this.shoot.events.onInputDown.add(this.listener, this);
+    }
     //create groups
     this.inimigos = jogo.novoGrupo();   
     this.bombas = jogo.novoGrupo();
@@ -86,30 +95,59 @@ Welpworld.Game.prototype = {
  
    this.movimentoJogador();
 
-   if(jogo.teclaPressionada("enter") && this.reiniciar===jogo.verdade)
+   if((jogo.teclaPressionada("enter") || jogo.jogo.input.activePointer.isDown )&& this.reiniciar===jogo.verdade)
       this.recomecar();
+  },
+  listener:function(){
+    if (jogo.tempoAgora() > this.proximoTiro && jogo.numeroObjectosDestruidos(this.balas) > 0)
+        {
+          this.proximoTiro = jogo.tempoAgora() + this.frequenciaBala;
+          this.criarBala();
+          
+        }
   },
   
   movimentoJogador: function() {
-    
-    if(jogo.teclaPressionada("cima") && this.jogador.y > this.alturaMaxima){
-        jogo.definirVelocidadeY(this.jogador, -this.velociadeJogador);
-     }else if (jogo.teclaPressionada("baixo")){
-       jogo.definirVelocidadeY(this.jogador, this.velociadeJogador);
-     }else{
-        jogo.definirVelocidadeY(this.jogador,0);
-     }
+  
+       //  only move when you click
+    if (jogo.jogo.input.activePointer.isDown && !(jogo.jogo.input.activePointer.x > 680 && jogo.jogo.input.activePointer.y<130))
+    {
+        //  400 is the speed it will move towards the mouse
+        jogo.jogo.physics.arcade.moveToPointer(this.jogador, this.velociadeJogador);
+        if(this.jogador.y < this.alturaMaxima){
+          this.jogador.y = this.alturaMaxima;
+        jogo.jogo.physics.arcade.moveToPointer(this.jogador, this.velociadeJogador);
+        }
 
-     if(jogo.teclaPressionada("esquerda"))  {
-       jogo.definirVelocidadeX(this.jogador, -this.velociadeJogador);
-       jogo.espelharSprite(this.jogador,"esquerda");
-     }else if(jogo.teclaPressionada("direita"))  {
-        jogo.espelharSprite(this.jogador,"direita");
-        jogo.definirVelocidadeX(this.jogador, this.velociadeJogador);
-     }else {
-        jogo.definirVelocidadeX(this.jogador,0);
-        jogo.espelharSprite(this.jogador,"direita");
-     }
+
+        //  if it's overlapping the mouse, don't move any more
+        if (Phaser.Rectangle.contains(this.jogador.body, jogo.jogo.input.activePointer.x, jogo.jogo.input.activePointer.y))
+        {
+            this.jogador.body.velocity.setTo(0, 0);
+        }
+    }else{
+
+        
+      if(jogo.teclaPressionada("cima") && this.jogador.y > this.alturaMaxima){
+          jogo.definirVelocidadeY(this.jogador, -this.velociadeJogador);
+      }else if (jogo.teclaPressionada("baixo")){
+        jogo.definirVelocidadeY(this.jogador, this.velociadeJogador);
+      }else{
+          jogo.definirVelocidadeY(this.jogador,0);
+      }
+
+
+      if(jogo.teclaPressionada("esquerda"))  {
+        jogo.definirVelocidadeX(this.jogador, -this.velociadeJogador);
+        jogo.espelharSprite(this.jogador,"esquerda");
+      }else if(jogo.teclaPressionada("direita"))  {
+          jogo.espelharSprite(this.jogador,"direita");
+          jogo.definirVelocidadeX(this.jogador, this.velociadeJogador);
+      }else {
+          jogo.definirVelocidadeX(this.jogador,0);
+          jogo.espelharSprite(this.jogador,"direita");
+      }
+    }
      
      if(jogo.teclaPressionada("espaco") && this.vivo===jogo.verdade){
         if (jogo.tempoAgora() > this.proximoTiro && jogo.numeroObjectosDestruidos(this.balas) > 0)
@@ -210,6 +248,6 @@ Welpworld.Game.prototype = {
     this.proximoTiro = 0;
     this.vivo = jogo.verdade;
     jogo.activarEstado('Game');
-}
+},
 
-}
+};
