@@ -22,7 +22,7 @@ Welpworld.Boot.prototype = {
     jogo.corFundo('#FFF');
     
     //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
-    jogo.numeroToques(1);
+    jogo.numeroToques(2);
 
     if (jogo.paraDispositivoMovel()) {
       jogo.definirDimensoesMovel(800,446,1200,446,true);
