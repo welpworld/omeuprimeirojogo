@@ -17,7 +17,7 @@ Welpworld.MainMenu.prototype = {
   },
   update: function() {
    
-    if(jogo.teclaPressionada("enter") || jogo.jogo.input.pointer1.isDown){
+    if(jogo.teclaPressionada("enter") || jogo.jogo.input.activePointer.isDown){
       jogo.activarEstado('Game');
     }
   },

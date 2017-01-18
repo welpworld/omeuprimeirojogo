@@ -95,7 +95,7 @@ Welpworld.Game.prototype = {
  
    this.movimentoJogador();
 
-   if((jogo.teclaPressionada("enter") || jogo.jogo.input.activePointer.isDown )&& this.reiniciar===jogo.verdade)
+   if((jogo.teclaPressionada("enter") || jogo.jogo.input.activePointer.isDown) && this.reiniciar===jogo.verdade)
       this.recomecar();
   },
   listener:function(){

@@ -9,7 +9,7 @@ Welpworld.Boot.prototype = {
     jogo.carregarImagem('logo', 'assets/images/logo.png');
     jogo.carregarImagem('preloadbar', 'assets/images/preloader-bar.png');
 
- jogo.jogo.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+     jogo.jogo.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 			jogo.jogo.scale.forceOrientation(true, false);
 
       jogo.jogo.scale.enterIncorrectOrientation.add(this.handleIncorrect);
