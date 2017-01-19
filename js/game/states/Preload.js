@@ -19,6 +19,7 @@ Welpworld.Preload.prototype = {
     jogo.carregarSprite('jogador', 'assets/images/barco_bom.png', 213.85, 175.13, 2);
     jogo.carregarSprite('inimigo', 'assets/images/barco_mau.png', 224.8, 175.13,2);
     jogo.carregarImagem('bomba', 'assets/images/bomba.png');
+    jogo.carregarImagem('shoot', 'assets/images/shoot.png');
 
     jogo.carregarTextoBitmap('minecraftia', 'assets/fonts/minecraftia/minecraftia.png', 'assets/fonts/minecraftia/minecraftia.xml');
 

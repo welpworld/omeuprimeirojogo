@@ -2,7 +2,7 @@ Welpworld.MainMenu = function() {};
 
 Welpworld.MainMenu.prototype = {
   create: function() {
-   
+
     this.fundo = jogo.utilizarSprite(0,0,jogo.larguraTela(),jogo.alturaTela(),'fundo');
     jogo.rotacaoImagem(this.fundo,-100,0);
     this.horizonte = jogo.utilizarSprite(0, 250, jogo.larguraTela(), jogo.alturaTela(), 'horizonte');
@@ -21,9 +21,9 @@ Welpworld.MainMenu.prototype = {
   },
   update: function() {
    
-    if(jogo.teclaPressionada("enter")){
+    if(jogo.teclaPressionada("enter") || jogo.jogo.input.activePointer.isDown){
       jogo.activarEstado('Game');
     }
-  }
+  },
   
 };
